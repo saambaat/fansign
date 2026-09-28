@@ -5,7 +5,7 @@ import react from '@astrojs/react';
 
 export default defineConfig({
   site: 'https://saambaat.github.io',
-  base: '/fansign',
+  base: '/ssszip',
   trailingSlash: 'never',
   build: {
     format: 'file',
