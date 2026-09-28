@@ -7,19 +7,30 @@ import ThemeToggle from '../components/ThemeToggle.tsx';
 import { languages, type Lang } from '../i18n/ui';
 import { asLang, localePath, stripLocale, useTranslations } from '../i18n/utils';
 import { monthKey, monthName } from '../lib/months';
-import type { Moment } from '../lib/moment-schema';
+import type { Moment, Pairing } from '../lib/moment-schema';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   years: string[];
   activeYear?: string;
+  activePairing?: Pairing;
+  pairings?: Pairing[];
   searchMoments?: Moment[];
+  searchPairings?: Pairing[];
   months?: string[];
   lang?: Lang;
 }
 
-const { title, years, activeYear, searchMoments, months = [] } = Astro.props;
+const {
+  title,
+  years,
+  activeYear,
+  activePairing,
+  searchMoments,
+  searchPairings,
+  months = [],
+} = Astro.props;
 const lang = Astro.props.lang ?? asLang(Astro.currentLocale);
 const t = useTranslations(lang);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -67,9 +78,20 @@ const localeUrls = Object.fromEntries(
         <span class="shrink-0 text-sm font-semibold">{t('site.title')}</span>
         <div class="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:max-w-md">
           {
-            searchMoments && (
+            (searchMoments || searchPairings) && (
               <Search
-                moments={searchMoments.map(({ id, date, title, event, tags }) => ({ id, date, title, event, tags }))}
+                moments={searchMoments?.map(
+                  ({ id, pairing, momentType, date, title, event, tags }) => ({
+                    id,
+                    pairing,
+                    momentType,
+                    date,
+                    title,
+                    event,
+                    tags,
+                  }),
+                )}
+                pairings={searchPairings}
                 lang={lang}
                 client:load
               />
@@ -87,7 +109,13 @@ const localeUrls = Object.fromEntries(
           : 'lg:grid-cols-[12rem_minmax(0,1fr)]'
       }`}
     >
-      <Sidebar years={years} activeYear={activeYear} lang={lang} />
+      <Sidebar
+        years={years}
+        pairings={Astro.props.pairings}
+        activeYear={activeYear}
+        activePairing={activePairing}
+        lang={lang}
+      />
       <main class="min-w-0">
         <slot />
         <p class="py-12 text-center text-muted-foreground" data-empty-state hidden>

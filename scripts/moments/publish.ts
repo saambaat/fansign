@@ -38,6 +38,8 @@ const pullRequestBody = (action: MomentAction, moment: Moment): string => {
     '',
     `- action: ${action}`,
     `- id: ${moment.id}`,
+    `- pairing: ${moment.pairing}`,
+    `- momentType: ${moment.momentType}`,
     `- date: ${moment.date}`,
     ...describeLocalized('event', event),
     ...describeLocalized('title', title),
