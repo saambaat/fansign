@@ -24,8 +24,7 @@ const asset = (path: string) => `${base}/${path}`;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
-    <link rel="icon" href={asset('favicon.ico')} />
+    <link rel="icon" href={asset('favicon.ico')} sizes="48x48" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content="A fan-made directory of fansign moments, with videos embedded from Imgur." />
@@ -43,6 +42,7 @@ const asset = (path: string) => `${base}/${path}`;
     <header class="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
       <div class="flex items-center gap-3 px-4 py-3 sm:px-6">
         <MobileNav years={years} activeYear={activeYear} base={base} client:load />
+        <span class="shrink-0 text-sm font-semibold">Fansigns</span>
         <div class="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:max-w-md">
           <Search
             moments={searchMoments.map(({ id, date, title, event, tags }) => ({ id, date, title, event, tags }))}

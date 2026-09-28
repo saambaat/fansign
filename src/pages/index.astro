@@ -4,8 +4,9 @@ import MomentCard from '../components/MomentCard.astro';
 import { moments, monthName } from '../lib/moments';
 
 const years = [...new Set(moments.map((moment) => moment.date.slice(0, 4)))];
-const grouped = years.map((year) => {
-  const items = moments.filter((moment) => moment.date.startsWith(year));
+const latest = moments.slice(0, 10);
+const grouped = [...new Set(latest.map((moment) => moment.date.slice(0, 4)))].map((year) => {
+  const items = latest.filter((moment) => moment.date.startsWith(year));
   const yearMonths = [...new Set(items.map((moment) => moment.date.slice(0, 7)))];
   return {
     year,
@@ -17,7 +18,7 @@ const grouped = years.map((year) => {
 });
 ---
 
-<BaseLayout title="38 Fansigns" years={years} searchMoments={moments}>
+<BaseLayout title="Fansigns" years={years} searchMoments={latest}>
   {
     grouped.map(({ year, months }) => (
       <section class="scroll-mt-24 [&+&]:mt-10" id={`year-${year}`} data-year-section>
