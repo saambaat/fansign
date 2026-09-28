@@ -3,7 +3,9 @@ import Fuse from 'fuse.js';
 import { Input } from '@/components/ui/input';
 import type { Lang } from '@/i18n/ui';
 import { useTranslations } from '@/i18n/utils';
-import { headingFor, monthName, resolveText, type Moment } from '@/lib/moments';
+import { headingFor } from '@/lib/moment-display';
+import { resolveText, type Moment } from '@/lib/moment-schema';
+import { monthName } from '@/lib/months';
 
 export default function Search({ moments, lang }: { moments: Moment[]; lang: Lang }) {
   const [query, setQuery] = useState('');

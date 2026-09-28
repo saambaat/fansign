@@ -6,7 +6,8 @@ import Sidebar from '../components/Sidebar.astro';
 import ThemeToggle from '../components/ThemeToggle.tsx';
 import { languages, type Lang } from '../i18n/ui';
 import { asLang, localePath, stripLocale, useTranslations } from '../i18n/utils';
-import { monthKey, monthName, type Moment } from '../lib/moments';
+import { monthKey, monthName } from '../lib/months';
+import type { Moment } from '../lib/moment-schema';
 import '../styles/global.css';
 
 interface Props {
