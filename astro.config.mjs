@@ -6,6 +6,10 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://saambaat.github.io',
   base: '/fansign',
+  trailingSlash: 'never',
+  build: {
+    format: 'file',
+  },
   i18n: {
     locales: ['en', 'ko', 'zh'],
     defaultLocale: 'en',

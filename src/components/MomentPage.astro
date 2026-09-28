@@ -1,0 +1,89 @@
+---
+import { ArrowLeftIcon, ExternalLinkIcon } from 'lucide-react';
+import type { Lang } from '../i18n/ui';
+import { localePath, useTranslations } from '../i18n/utils';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pageUrl, posterUrl, videoUrl } from '../lib/imgur';
+import { resolveText, type Moment } from '../lib/moment-schema';
+import { moments } from '../lib/moments';
+import { formatDate } from '../lib/months';
+
+interface Props {
+  moment: Moment;
+  lang: Lang;
+}
+
+const { moment, lang } = Astro.props;
+const t = useTranslations(lang);
+
+const years = [...new Set(moments.map((item) => item.date.slice(0, 4)))];
+const year = moment.date.slice(0, 4);
+const title = resolveText(moment.title, lang);
+const event = resolveText(moment.event, lang);
+const date = formatDate(moment.date, lang);
+const heading = title ?? event ?? date;
+const sub = !title && !event ? undefined : title && event ? `${date} · ${event}` : date;
+
+const backHref = localePath(lang, `/${year}`);
+const linkClass =
+  'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground';
+---
+
+<BaseLayout title={`${heading} · ${t('site.title')}`} lang={lang} years={years} activeYear={year}>
+  <article class="mx-auto flex max-w-2xl flex-col">
+    <a
+      href={backHref}
+      aria-label={t('moment.backToYear')}
+      class="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <ArrowLeftIcon className="size-4" />
+      <span>{year}</span>
+    </a>
+    <div class="mt-3 overflow-hidden rounded-xl border bg-black">
+      <video
+        src={videoUrl(moment.id)}
+        poster={posterUrl(moment.id)}
+        controls
+        autoplay
+        muted
+        loop
+        playsinline
+        aria-label={heading}
+        class="mx-auto block max-h-[75vh] w-full object-contain"></video>
+    </div>
+    <div class="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      <div class="min-w-0">
+        <h1 class="text-lg font-semibold">{heading}</h1>
+        {sub && <p class="mt-1 text-sm text-muted-foreground">{sub}</p>}
+      </div>
+      <a href={pageUrl(moment.id)} target="_blank" rel="noreferrer" class={linkClass}>
+        <ExternalLinkIcon className="size-4" />
+        <span>{t('moment.viewOriginal')}</span>
+      </a>
+    </div>
+    {
+      moment.tags.length > 0 && (
+        <ul class="mt-4 flex flex-wrap gap-1.5" aria-label={t('moment.tags')}>
+          {moment.tags.map((tag) => (
+            <li class="rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground">{tag}</li>
+          ))}
+        </ul>
+      )
+    }
+    {
+      moment.credit && (
+        <p class="mt-4 text-sm text-muted-foreground">
+          {t('moment.credit')}:{' '}
+          <a
+            href={moment.credit}
+            target="_blank"
+            rel="noreferrer"
+            class="break-all underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground"
+          >
+            {moment.credit}
+          </a>
+        </p>
+      )
+    }
+  </article>
+</BaseLayout>

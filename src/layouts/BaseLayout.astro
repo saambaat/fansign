@@ -14,7 +14,7 @@ interface Props {
   title: string;
   years: string[];
   activeYear?: string;
-  searchMoments: Moment[];
+  searchMoments?: Moment[];
   months?: string[];
   lang?: Lang;
 }
@@ -66,11 +66,15 @@ const localeUrls = Object.fromEntries(
         <MobileNav years={years} activeYear={activeYear} lang={lang} client:load />
         <span class="shrink-0 text-sm font-semibold">{t('site.title')}</span>
         <div class="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:max-w-md">
-          <Search
-            moments={searchMoments.map(({ id, date, title, event, tags }) => ({ id, date, title, event, tags }))}
-            lang={lang}
-            client:load
-          />
+          {
+            searchMoments && (
+              <Search
+                moments={searchMoments.map(({ id, date, title, event, tags }) => ({ id, date, title, event, tags }))}
+                lang={lang}
+                client:load
+              />
+            )
+          }
           <LanguageSwitcher lang={lang} urls={localeUrls} client:load />
           <ThemeToggle lang={lang} client:load />
         </div>
@@ -125,7 +129,7 @@ const localeUrls = Object.fromEntries(
         }
       };
 
-      const videos = document.querySelectorAll<HTMLVideoElement>('[data-media] video');
+      const videos = document.querySelectorAll<HTMLVideoElement>('[data-preview]');
 
       const observer = new IntersectionObserver(
         (entries) => {
@@ -149,15 +153,6 @@ const localeUrls = Object.fromEntries(
 
         video.addEventListener('mouseleave', () => {
           video.pause();
-        });
-
-        video.addEventListener('click', () => {
-          loadVideo(video);
-          if (video.paused) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
         });
       });
     </script>
