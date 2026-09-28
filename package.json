@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "astro": "astro"
+    "astro": "astro",
+    "moments": "bun scripts/moments/index.ts"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.0",
@@ -33,6 +34,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@clack/prompts": "^1.8.1",
+    "@types/node": "^26.6.3",
     "typescript": "6"
   }
 }
