@@ -9,7 +9,7 @@ export type Lang = keyof typeof languages;
 export const defaultLang: Lang = 'en';
 
 export const en = {
-  'site.title': 'ssszip',
+  'site.title': 'ssszzip',
   'site.description': 'A fan-made directory of fansign moments, with videos embedded from Imgur.',
   'nav.site': 'Site',
   'nav.home': 'Home',
@@ -37,7 +37,7 @@ export const en = {
 export type UIKey = keyof typeof en;
 
 export const ko: Record<UIKey, string> = {
-  'site.title': 'ssszip',
+  'site.title': 'ssszzip',
   'site.description': '팬사인 순간들을 모은 팬 제작 아카이브입니다. 영상은 Imgur에서 불러옵니다.',
   'nav.site': '사이트',
   'nav.home': '홈',
@@ -63,7 +63,7 @@ export const ko: Record<UIKey, string> = {
 };
 
 export const zh: Record<UIKey, string> = {
-  'site.title': 'ssszip',
+  'site.title': 'ssszzip',
   'site.description': '粉丝整理的签售瞬间合集，视频来自 Imgur。',
   'nav.site': '网站',
   'nav.home': '首页',
