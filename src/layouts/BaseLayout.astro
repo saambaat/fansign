@@ -1,0 +1,139 @@
+---
+import MobileNav from '../components/MobileNav.tsx';
+import Search from '../components/Search.tsx';
+import Sidebar from '../components/Sidebar.astro';
+import ThemeToggle from '../components/ThemeToggle.tsx';
+import { monthKey, monthName, type Moment } from '../lib/moments';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  years: string[];
+  activeYear?: string;
+  searchMoments: Moment[];
+  months?: string[];
+}
+
+const { title, years, activeYear, searchMoments, months = [] } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const asset = (path: string) => `${base}/${path}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href={asset('favicon.svg')} />
+    <link rel="icon" href={asset('favicon.ico')} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content="A fan-made directory of fansign moments, with videos embedded from Imgur." />
+    <script is:inline>
+      var theme = 'system';
+      try {
+        var stored = localStorage.getItem('theme');
+        if (stored === 'light' || stored === 'dark') theme = stored;
+      } catch (e) {}
+      var dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', dark);
+    </script>
+  </head>
+  <body class="antialiased">
+    <header class="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
+      <div class="flex items-center gap-3 px-4 py-3 sm:px-6">
+        <MobileNav years={years} activeYear={activeYear} base={base} client:load />
+        <div class="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:max-w-md">
+          <Search
+            moments={searchMoments.map(({ id, date, title, event, tags }) => ({ id, date, title, event, tags }))}
+            client:load
+          />
+          <ThemeToggle client:load />
+        </div>
+      </div>
+    </header>
+    <div
+      class={`grid gap-6 px-4 py-6 sm:px-6 lg:gap-8 ${
+        months.length > 0
+          ? 'lg:grid-cols-[12rem_minmax(0,1fr)_10rem]'
+          : 'lg:grid-cols-[12rem_minmax(0,1fr)]'
+      }`}
+    >
+      <Sidebar years={years} activeYear={activeYear} />
+      <main class="min-w-0">
+        <slot />
+        <p class="py-12 text-center text-muted-foreground" data-empty-state hidden>No moments match.</p>
+      </main>
+      {
+        months.length > 0 && (
+          <aside class="sticky top-20 hidden self-start lg:block" aria-label="Months">
+            <p class="mb-2 pl-3 text-xs font-medium text-muted-foreground">Months</p>
+            <ul class="flex flex-col gap-0.5 border-l">
+              {months.map((month) => (
+                <li data-month-link={monthKey(month)}>
+                  <a
+                    href={`#${monthKey(month)}`}
+                    class="-ml-px block border-l border-transparent px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                  >
+                    {monthName(month)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )
+      }
+    </div>
+    <script>
+      const loadVideo = (video: HTMLVideoElement) => {
+        const poster = video.dataset.poster;
+        if (poster) {
+          video.poster = poster;
+          delete video.dataset.poster;
+        }
+
+        const src = video.dataset.src;
+        if (src) {
+          video.src = src;
+          delete video.dataset.src;
+        }
+      };
+
+      const videos = document.querySelectorAll<HTMLVideoElement>('[data-media] video');
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              loadVideo(entry.target as HTMLVideoElement);
+              observer.unobserve(entry.target);
+            }
+          }
+        },
+        { rootMargin: '300px' },
+      );
+
+      videos.forEach((video) => {
+        observer.observe(video);
+
+        video.addEventListener('mouseenter', () => {
+          loadVideo(video);
+          video.play().catch(() => {});
+        });
+
+        video.addEventListener('mouseleave', () => {
+          video.pause();
+        });
+
+        video.addEventListener('click', () => {
+          loadVideo(video);
+          if (video.paused) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

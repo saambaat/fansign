@@ -1,0 +1,33 @@
+---
+import { headingFor, posterUrl, subFor, videoUrl, type Moment } from '../lib/moments';
+
+interface Props {
+  moment: Moment;
+}
+
+const { moment } = Astro.props;
+const heading = headingFor(moment);
+const sub = subFor(moment);
+---
+
+<article
+  class="flex flex-col overflow-hidden rounded-xl border bg-card text-card-foreground"
+  data-moment-id={moment.id}
+  data-date={moment.date}
+>
+  <div class="relative aspect-square flex-none bg-black" data-media>
+    <video
+      data-src={videoUrl(moment.id)}
+      data-poster={posterUrl(moment.id)}
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-label={heading}
+      class="block h-full w-full cursor-pointer object-contain"></video>
+  </div>
+  <div class="flex flex-col p-4">
+    <h2 class="line-clamp-2 text-base leading-normal font-medium">{heading}</h2>
+    {sub && <p class="mt-1 text-sm text-muted-foreground">{sub}</p>}
+  </div>
+</article>
