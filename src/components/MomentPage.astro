@@ -25,13 +25,21 @@ const date = formatDate(moment.date, lang);
 const heading = title ?? event ?? date;
 const sub = !title && !event ? undefined : title && event ? `${date} · ${event}` : date;
 const pairing = resolvePairing(moment.pairing, lang);
+const description = `${[heading, pairing.name].join(' · ')} — ${t('site.description')}`;
 
 const backHref = localePath(lang, `/${year}`);
 const linkClass =
   'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground';
 ---
 
-<BaseLayout title={`${heading} · ${t('site.title')}`} lang={lang} years={years} activeYear={year}>
+<BaseLayout
+  title={`${heading} · ${t('site.title')}`}
+  description={description}
+  type="article"
+  lang={lang}
+  years={years}
+  activeYear={year}
+>
   <article class="mx-auto flex max-w-2xl flex-col">
     <a
       href={backHref}
