@@ -1,6 +1,8 @@
 ---
 import type { Lang } from '../i18n/ui';
-import { headingFor, posterUrl, subFor, videoUrl, type Moment } from '../lib/moments';
+import { headingFor, subFor } from '../lib/moment-display';
+import type { Moment } from '../lib/moment-schema';
+import { posterUrl, videoUrl } from '../lib/imgur';
 
 interface Props {
   moment: Moment;

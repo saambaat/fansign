@@ -1,0 +1,111 @@
+import * as p from '@clack/prompts';
+import { languages, type Lang } from '../../src/i18n/ui';
+import { isRealDate, resolveText, type Moment } from '../../src/lib/moment-schema';
+import { guard, langOrder } from './core';
+
+export const extractImgurId = (value: string): string | undefined => {
+  const trimmed = value.trim();
+  if (/^[A-Za-z0-9]+$/.test(trimmed)) return trimmed;
+  return trimmed.match(/imgur\.com\/(?:gallery\/|a\/)?([A-Za-z0-9]+)/i)?.[1];
+};
+
+export const parseTags = (value: string): string[] =>
+  value
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0);
+
+export const today = (): string => new Date().toISOString().slice(0, 10);
+
+export const promptOptional = async (message: string, initialValue: string): Promise<string> =>
+  guard(await p.text({ message, initialValue })).trim();
+
+export const promptId = async (
+  initialValue: string,
+  taken: Set<string>,
+  current?: string,
+): Promise<string> => {
+  const value = guard(
+    await p.text({
+      message: 'Imgur media ID or URL',
+      placeholder: 'e.g. aMmtnGX',
+      initialValue,
+      validate: (input) => {
+        const id = extractImgurId(input ?? '');
+        if (!id) return 'Enter a media ID like aMmtnGX, or an i.imgur.com URL.';
+        if (taken.has(id) && id !== current) return `Another moment already uses "${id}".`;
+      },
+    }),
+  );
+  const id = extractImgurId(value);
+  if (!id) throw new Error('Could not read an Imgur media ID.');
+  return id;
+};
+
+export const promptDate = async (initialValue: string): Promise<string> => {
+  const value = guard(
+    await p.text({
+      message: 'Date (yyyy-MM-dd)',
+      initialValue,
+      validate: (input) => {
+        const trimmed = (input ?? '').trim();
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return 'Use yyyy-MM-dd.';
+        if (!isRealDate(trimmed)) return 'Not a real calendar date.';
+      },
+    }),
+  );
+  return value.trim();
+};
+
+export const promptSourceLang = async (): Promise<Lang> =>
+  guard(
+    await p.select({
+      message: 'Which language will you type the event/title in?',
+      options: langOrder.map((lang) => ({ value: lang, label: `${languages[lang]} (${lang})` })),
+    }),
+  );
+
+export const promptLocalizedSource = async (
+  label: string,
+  sourceLang: Lang,
+  initialValue: string,
+): Promise<string | undefined> => {
+  const value = guard(
+    await p.text({
+      message: `${label} in ${languages[sourceLang]} — leave empty to skip`,
+      initialValue,
+    }),
+  );
+  const trimmed = value.trim();
+  return trimmed === '' ? undefined : trimmed;
+};
+
+const labelFor = (moment: Moment): string =>
+  resolveText(moment.title, 'en') ??
+  [moment.date, resolveText(moment.event, 'en')].filter(Boolean).join(' · ');
+
+export const pickMoment = async (message: string, items: Moment[]): Promise<Moment> => {
+  const id = guard(
+    await p.select({
+      message,
+      options: items.map((moment) => ({
+        value: moment.id,
+        label: labelFor(moment),
+        hint: moment.id,
+      })),
+      maxItems: 12,
+    }),
+  );
+  const found = items.find((moment) => moment.id === id);
+  if (!found) throw new Error(`Moment ${id} not found.`);
+  return found;
+};
+
+export const showPreview = (moment: Moment): void => {
+  const lines = [`id: ${moment.id}`, `date: ${moment.date}`];
+  if (moment.title !== undefined) lines.push(`title: ${JSON.stringify(moment.title)}`);
+  if (moment.event !== undefined) lines.push(`event: ${JSON.stringify(moment.event)}`);
+  if (moment.credit !== undefined) lines.push(`credit: ${moment.credit}`);
+  if (moment.tags.length > 0) lines.push(`tags: ${moment.tags.join(', ')}`);
+  p.note(lines.join('\n'), 'Preview');
+};
