@@ -33,7 +33,7 @@ const itemClass =
         </p>
         {years.map((year) => (
           <a
-            href={localePath(lang, `/${year}/`)}
+            href={localePath(lang, `/${year}`)}
             aria-current={activeYear === year ? 'page' : undefined}
             class={`${itemClass} ml-6`}
           >

@@ -1,0 +1,13 @@
+---
+import MomentPage from '../../../../components/MomentPage.astro';
+import { asLang } from '../../../../i18n/utils';
+import { momentPaths } from '../../../../lib/moments';
+
+export function getStaticPaths() {
+  return momentPaths();
+}
+
+const lang = asLang(Astro.currentLocale);
+---
+
+<MomentPage moment={Astro.props.moment} lang={lang} />
