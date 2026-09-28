@@ -1,15 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import {
   formatIssues,
   momentListSchema,
   parseMoments,
   type Moment,
 } from '../../src/lib/moment-schema';
-
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const dataPath = join(root, 'src', 'data', 'moments.json');
+import { dataPath } from './core';
 
 const recordFor = (moment: Moment): Record<string, unknown> => {
   const record: Record<string, unknown> = { id: moment.id, date: moment.date };
