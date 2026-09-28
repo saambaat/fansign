@@ -1,13 +1,15 @@
 ---
+import type { Lang } from '../i18n/ui';
 import { headingFor, posterUrl, subFor, videoUrl, type Moment } from '../lib/moments';
 
 interface Props {
   moment: Moment;
+  lang: Lang;
 }
 
-const { moment } = Astro.props;
-const heading = headingFor(moment);
-const sub = subFor(moment);
+const { moment, lang } = Astro.props;
+const heading = headingFor(moment, lang);
+const sub = subFor(moment, lang);
 ---
 
 <article

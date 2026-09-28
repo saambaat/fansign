@@ -1,8 +1,11 @@
 ---
+import LanguageSwitcher from '../components/LanguageSwitcher.tsx';
 import MobileNav from '../components/MobileNav.tsx';
 import Search from '../components/Search.tsx';
 import Sidebar from '../components/Sidebar.astro';
 import ThemeToggle from '../components/ThemeToggle.tsx';
+import { languages, type Lang } from '../i18n/ui';
+import { asLang, localePath, stripLocale, useTranslations } from '../i18n/utils';
 import { monthKey, monthName, type Moment } from '../lib/moments';
 import '../styles/global.css';
 
@@ -12,22 +15,40 @@ interface Props {
   activeYear?: string;
   searchMoments: Moment[];
   months?: string[];
+  lang?: Lang;
 }
 
 const { title, years, activeYear, searchMoments, months = [] } = Astro.props;
+const lang = Astro.props.lang ?? asLang(Astro.currentLocale);
+const t = useTranslations(lang);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const asset = (path: string) => `${base}/${path}`;
+const path = stripLocale(Astro.url.pathname);
+const site = Astro.site ?? Astro.url;
+const localeUrls = Object.fromEntries(
+  (Object.keys(languages) as Lang[]).map((code) => [code, localePath(code, path)]),
+) as Record<Lang, string>;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" href={asset('favicon.ico')} sizes="48x48" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <meta name="description" content="A fan-made directory of fansign moments, with videos embedded from Imgur." />
+    <meta name="description" content={t('site.description')} />
+    {
+      (Object.keys(languages) as Lang[]).map((code) => (
+        <link
+          rel="alternate"
+          hreflang={code}
+          href={new URL(localePath(code, path), site).href}
+        />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL(localePath('en', path), site).href} />
     <script is:inline>
       var theme = 'system';
       try {
@@ -41,14 +62,16 @@ const asset = (path: string) => `${base}/${path}`;
   <body class="antialiased">
     <header class="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
       <div class="flex items-center gap-3 px-4 py-3 sm:px-6">
-        <MobileNav years={years} activeYear={activeYear} base={base} client:load />
-        <span class="shrink-0 text-sm font-semibold">Fansigns</span>
+        <MobileNav years={years} activeYear={activeYear} lang={lang} client:load />
+        <span class="shrink-0 text-sm font-semibold">{t('site.title')}</span>
         <div class="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:max-w-md">
           <Search
             moments={searchMoments.map(({ id, date, title, event, tags }) => ({ id, date, title, event, tags }))}
+            lang={lang}
             client:load
           />
-          <ThemeToggle client:load />
+          <LanguageSwitcher lang={lang} urls={localeUrls} client:load />
+          <ThemeToggle lang={lang} client:load />
         </div>
       </div>
     </header>
@@ -59,15 +82,17 @@ const asset = (path: string) => `${base}/${path}`;
           : 'lg:grid-cols-[12rem_minmax(0,1fr)]'
       }`}
     >
-      <Sidebar years={years} activeYear={activeYear} />
+      <Sidebar years={years} activeYear={activeYear} lang={lang} />
       <main class="min-w-0">
         <slot />
-        <p class="py-12 text-center text-muted-foreground" data-empty-state hidden>No moments match.</p>
+        <p class="py-12 text-center text-muted-foreground" data-empty-state hidden>
+          {t('search.empty')}
+        </p>
       </main>
       {
         months.length > 0 && (
-          <aside class="sticky top-20 hidden self-start lg:block" aria-label="Months">
-            <p class="mb-2 pl-3 text-xs font-medium text-muted-foreground">Months</p>
+          <aside class="sticky top-20 hidden self-start lg:block" aria-label={t('nav.months')}>
+            <p class="mb-2 pl-3 text-xs font-medium text-muted-foreground">{t('nav.months')}</p>
             <ul class="flex flex-col gap-0.5 border-l">
               {months.map((month) => (
                 <li data-month-link={monthKey(month)}>
@@ -75,7 +100,7 @@ const asset = (path: string) => `${base}/${path}`;
                     href={`#${monthKey(month)}`}
                     class="-ml-px block border-l border-transparent px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                   >
-                    {monthName(month)}
+                    {monthName(month, lang)}
                   </a>
                 </li>
               ))}

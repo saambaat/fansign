@@ -1,20 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
 import { Input } from '@/components/ui/input';
-import { headingFor, monthName, type Moment } from '@/lib/moments';
+import type { Lang } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { headingFor, monthName, resolveText, type Moment } from '@/lib/moments';
 
-export default function Search({ moments }: { moments: Moment[] }) {
+export default function Search({ moments, lang }: { moments: Moment[]; lang: Lang }) {
   const [query, setQuery] = useState('');
+  const t = useTranslations(lang);
 
   const fuse = useMemo(
     () =>
       new Fuse(
         moments.map((moment) => ({
           id: moment.id,
-          heading: headingFor(moment),
-          event: moment.event ?? '',
+          heading: headingFor(moment, lang),
+          event: resolveText(moment.event, lang) ?? '',
           date: moment.date,
-          month: monthName(moment.date.slice(0, 7)),
+          month: monthName(moment.date.slice(0, 7), lang),
           tags: moment.tags ?? [],
         })),
         {
@@ -23,7 +26,7 @@ export default function Search({ moments }: { moments: Moment[] }) {
           ignoreLocation: true,
         },
       ),
-    [moments],
+    [moments, lang],
   );
 
   useEffect(() => {
@@ -60,7 +63,7 @@ export default function Search({ moments }: { moments: Moment[] }) {
   return (
     <Input
       type="search"
-      placeholder="Search"
+      placeholder={t('search.placeholder')}
       value={query}
       onChange={(event) => setQuery(event.target.value)}
       className="h-8 rounded-full"

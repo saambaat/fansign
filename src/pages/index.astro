@@ -1,39 +1,8 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import MomentCard from '../components/MomentCard.astro';
-import { moments, monthName } from '../lib/moments';
+import HomePage from '../components/HomePage.astro';
+import { asLang } from '../i18n/utils';
 
-const years = [...new Set(moments.map((moment) => moment.date.slice(0, 4)))];
-const latest = moments.slice(0, 10);
-const grouped = [...new Set(latest.map((moment) => moment.date.slice(0, 4)))].map((year) => {
-  const items = latest.filter((moment) => moment.date.startsWith(year));
-  const yearMonths = [...new Set(items.map((moment) => moment.date.slice(0, 7)))];
-  return {
-    year,
-    months: yearMonths.map((month) => ({
-      month,
-      items: items.filter((moment) => moment.date.startsWith(month)),
-    })),
-  };
-});
+const lang = asLang(Astro.currentLocale);
 ---
 
-<BaseLayout title="Fansigns" years={years} searchMoments={latest}>
-  {
-    grouped.map(({ year, months }) => (
-      <section class="scroll-mt-24 [&+&]:mt-10" id={`year-${year}`} data-year-section>
-        <h2 class="text-lg font-semibold">{year}</h2>
-        <div class="mt-4 space-y-6">
-          {months.map(({ month, items }) => (
-            <section class="scroll-mt-24" data-month-section>
-              <h3 class="mb-3 text-sm font-medium text-muted-foreground">{monthName(month)}</h3>
-              <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] items-start gap-5">
-                {items.map((moment) => <MomentCard moment={moment} />)}
-              </div>
-            </section>
-          ))}
-        </div>
-      </section>
-    ))
-  }
-</BaseLayout>
+<HomePage lang={lang} />
