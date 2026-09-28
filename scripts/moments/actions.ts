@@ -7,7 +7,9 @@ import {
   promptDate,
   promptId,
   promptLocalizedSource,
+  promptMomentType,
   promptOptional,
+  promptPairing,
   promptSourceLang,
   showPreview,
   today,
@@ -20,6 +22,8 @@ export const addMoment = async (): Promise<void> => {
   const items = await loadMoments();
   const taken = new Set(items.map((moment) => moment.id));
   const id = await promptId('', taken);
+  const pairing = await promptPairing();
+  const momentType = await promptMomentType();
   const date = await promptDate(today());
   const sourceLang = await promptSourceLang();
   const eventSource = await promptLocalizedSource('Event', sourceLang, '');
@@ -28,7 +32,16 @@ export const addMoment = async (): Promise<void> => {
   const title = titleSource ? await translateInteractive('title', titleSource, sourceLang) : undefined;
   const credit = await promptOptional('Credit (URL) — leave empty to skip', '');
   const tags = parseTags(await promptOptional('Tags (comma separated) — leave empty to skip', ''));
-  const draft = momentSchema.parse({ id, date, title, event, credit: credit || undefined, tags });
+  const draft = momentSchema.parse({
+    id,
+    pairing,
+    momentType,
+    date,
+    title,
+    event,
+    credit: credit || undefined,
+    tags,
+  });
   showPreview(draft);
   const confirmed = guard(await p.confirm({ message: 'Save this moment?' }));
   if (!confirmed) {
@@ -49,6 +62,8 @@ export const editMoment = async (): Promise<void> => {
   const target = await pickMoment('Which moment do you want to edit?', items);
   const sourceLang = await promptSourceLang();
   const id = await promptId(target.id, new Set(items.map((moment) => moment.id)), target.id);
+  const pairing = await promptPairing(target.pairing);
+  const momentType = await promptMomentType(target.momentType);
   const date = await promptDate(target.date);
   const event = await editLocalized('Event', target.event, sourceLang);
   const title = await editLocalized('Title', target.title, sourceLang);
@@ -56,7 +71,16 @@ export const editMoment = async (): Promise<void> => {
   const tags = parseTags(
     await promptOptional('Tags (comma separated) — leave empty to remove', target.tags.join(', ')),
   );
-  const draft = momentSchema.parse({ id, date, title, event, credit: credit || undefined, tags });
+  const draft = momentSchema.parse({
+    id,
+    pairing,
+    momentType,
+    date,
+    title,
+    event,
+    credit: credit || undefined,
+    tags,
+  });
   showPreview(draft);
   const confirmed = guard(await p.confirm({ message: 'Save changes?' }));
   if (!confirmed) {

@@ -6,6 +6,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { pageUrl, posterUrl, videoUrl } from '../lib/imgur';
 import { resolveText, type Moment } from '../lib/moment-schema';
 import { moments } from '../lib/moments';
+import { resolvePairing } from '../lib/pairings';
 import { formatDate } from '../lib/months';
 
 interface Props {
@@ -23,6 +24,7 @@ const event = resolveText(moment.event, lang);
 const date = formatDate(moment.date, lang);
 const heading = title ?? event ?? date;
 const sub = !title && !event ? undefined : title && event ? `${date} · ${event}` : date;
+const pairing = resolvePairing(moment.pairing, lang);
 
 const backHref = localePath(lang, `/${year}`);
 const linkClass =
@@ -61,6 +63,16 @@ const linkClass =
         <span>{t('moment.viewOriginal')}</span>
       </a>
     </div>
+    <p class="mt-4 text-sm text-muted-foreground">
+      {t('moment.pairing')}:{' '}
+      <a
+        href={localePath(lang, `/${moment.pairing}`)}
+        class="underline decoration-dotted underline-offset-4 transition-colors hover:text-foreground"
+      >
+        {pairing.name}
+      </a>{' '}
+      ({pairing.members.join(' · ')})
+    </p>
     {
       moment.tags.length > 0 && (
         <ul class="mt-4 flex flex-wrap gap-1.5" aria-label={t('moment.tags')}>

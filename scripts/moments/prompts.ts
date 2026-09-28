@@ -1,6 +1,14 @@
 import * as p from '@clack/prompts';
 import { languages, type Lang } from '../../src/i18n/ui';
-import { isRealDate, resolveText, type Moment } from '../../src/lib/moment-schema';
+import {
+  isRealDate,
+  momentTypeSchema,
+  pairingSchema,
+  resolveText,
+  type Moment,
+  type MomentType,
+  type Pairing,
+} from '../../src/lib/moment-schema';
 import { guard, langOrder } from './core';
 
 export const extractImgurId = (value: string): string | undefined => {
@@ -57,6 +65,27 @@ export const promptDate = async (initialValue: string): Promise<string> => {
   return value.trim();
 };
 
+export const promptPairing = async (initialValue?: Pairing): Promise<Pairing> =>
+  guard(
+    await p.select({
+      message: 'Pairing',
+      options: pairingSchema.options.map((pairing) => ({ value: pairing, label: pairing })),
+      initialValue,
+    }),
+  );
+
+export const promptMomentType = async (initialValue?: MomentType): Promise<MomentType> =>
+  guard(
+    await p.select({
+      message: 'Moment type',
+      options: momentTypeSchema.options.map((momentType) => ({
+        value: momentType,
+        label: momentType,
+      })),
+      initialValue,
+    }),
+  );
+
 export const promptSourceLang = async (): Promise<Lang> =>
   guard(
     await p.select({
@@ -102,7 +131,12 @@ export const pickMoment = async (message: string, items: Moment[]): Promise<Mome
 };
 
 export const showPreview = (moment: Moment): void => {
-  const lines = [`id: ${moment.id}`, `date: ${moment.date}`];
+  const lines = [
+    `id: ${moment.id}`,
+    `pairing: ${moment.pairing}`,
+    `momentType: ${moment.momentType}`,
+    `date: ${moment.date}`,
+  ];
   if (moment.title !== undefined) lines.push(`title: ${JSON.stringify(moment.title)}`);
   if (moment.event !== undefined) lines.push(`event: ${JSON.stringify(moment.event)}`);
   if (moment.credit !== undefined) lines.push(`credit: ${moment.credit}`);

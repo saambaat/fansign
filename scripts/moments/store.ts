@@ -8,7 +8,12 @@ import {
 import { dataPath } from './core';
 
 const recordFor = (moment: Moment): Record<string, unknown> => {
-  const record: Record<string, unknown> = { id: moment.id, date: moment.date };
+  const record: Record<string, unknown> = {
+    id: moment.id,
+    pairing: moment.pairing,
+    momentType: moment.momentType,
+    date: moment.date,
+  };
   if (moment.title !== undefined) record.title = moment.title;
   if (moment.event !== undefined) record.event = moment.event;
   if (moment.credit !== undefined) record.credit = moment.credit;
