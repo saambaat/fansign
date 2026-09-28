@@ -17,7 +17,7 @@ const grouped = years.map((year) => {
 });
 ---
 
-<BaseLayout title="Fansign Moments" years={years} searchMoments={moments}>
+<BaseLayout title="38 Fansigns" years={years} searchMoments={moments}>
   {
     grouped.map(({ year, months }) => (
       <section class="scroll-mt-24 [&+&]:mt-10" id={`year-${year}`} data-year-section>
