@@ -22,6 +22,7 @@ const years = [...new Set(pairingMoments.map((moment) => moment.date.slice(0, 4)
 
 <BaseLayout
   title={`${pairing.name} · ${t('site.title')}`}
+  description={pairing.description ?? `${pairing.name} · ${t('site.description')}`}
   lang={lang}
   years={years}
   activePairing={pairingId}

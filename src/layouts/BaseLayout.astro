@@ -12,6 +12,8 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description?: string;
+  type?: 'website' | 'article';
   years: string[];
   activeYear?: string;
   activePairing?: Pairing;
@@ -37,6 +39,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const asset = (path: string) => `${base}/${path}`;
 const path = stripLocale(Astro.url.pathname);
 const site = Astro.site ?? Astro.url;
+const canonical = new URL(localePath(lang, path), site).href;
+const description = Astro.props.description ?? t('site.description');
+const ogImage = new URL(asset('og.png'), site).href;
+const ogLocales: Record<Lang, string> = { en: 'en_US', ko: 'ko_KR', zh: 'zh_CN' };
 const localeUrls = Object.fromEntries(
   (Object.keys(languages) as Lang[]).map((code) => [code, localePath(code, path)]),
 ) as Record<Lang, string>;
@@ -50,7 +56,26 @@ const localeUrls = Object.fromEntries(
     <link rel="icon" href={asset('favicon.ico')} sizes="48x48" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <meta name="description" content={t('site.description')} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content={Astro.props.type ?? 'website'} />
+    <meta property="og:site_name" content={t('site.title')} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocales[lang]} />
+    {
+      (Object.keys(languages) as Lang[])
+        .filter((code) => code !== lang)
+        .map((code) => <meta property="og:locale:alternate" content={ogLocales[code]} />)
+    }
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     {
       (Object.keys(languages) as Lang[]).map((code) => (
         <link
