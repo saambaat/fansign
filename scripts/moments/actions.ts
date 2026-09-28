@@ -14,6 +14,7 @@ import {
 } from './prompts';
 import { loadMoments, saveMoments } from './store';
 import { editLocalized, translateInteractive } from './translate';
+import { offerPullRequest } from './publish';
 
 export const addMoment = async (): Promise<void> => {
   const items = await loadMoments();
@@ -36,6 +37,7 @@ export const addMoment = async (): Promise<void> => {
   }
   await saveMoments([...items, draft]);
   p.log.success(`Saved ${draft.id} to src/data/moments.json.`);
+  await offerPullRequest('add', draft);
 };
 
 export const editMoment = async (): Promise<void> => {
@@ -63,6 +65,7 @@ export const editMoment = async (): Promise<void> => {
   }
   await saveMoments(items.map((moment) => (moment.id === target.id ? draft : moment)));
   p.log.success(`Updated ${draft.id}.`);
+  await offerPullRequest('edit', draft);
 };
 
 export const deleteMoment = async (): Promise<void> => {
@@ -80,4 +83,5 @@ export const deleteMoment = async (): Promise<void> => {
   }
   await saveMoments(items.filter((moment) => moment.id !== target.id));
   p.log.success(`Deleted ${target.id}.`);
+  await offerPullRequest('delete', target);
 };
