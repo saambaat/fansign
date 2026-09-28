@@ -1,8 +1,8 @@
 ---
 import type { Lang } from '../i18n/ui';
-import { headingFor, subFor } from '../lib/moment-display';
-import type { Moment } from '../lib/moment-schema';
 import { posterUrl, videoUrl } from '../lib/imgur';
+import { headingFor, momentHref, subFor } from '../lib/moment-display';
+import type { Moment } from '../lib/moment-schema';
 
 interface Props {
   moment: Moment;
@@ -12,10 +12,12 @@ interface Props {
 const { moment, lang } = Astro.props;
 const heading = headingFor(moment, lang);
 const sub = subFor(moment, lang);
+const href = momentHref(moment, lang);
 ---
 
-<article
-  class="flex flex-col overflow-hidden rounded-xl border bg-card text-card-foreground"
+<a
+  href={href}
+  class="flex flex-col overflow-hidden rounded-xl border bg-card text-card-foreground transition-colors hover:border-foreground/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
   data-moment-id={moment.id}
   data-date={moment.date}
 >
@@ -23,6 +25,7 @@ const sub = subFor(moment, lang);
     <video
       data-src={videoUrl(moment.id)}
       data-poster={posterUrl(moment.id)}
+      data-preview
       muted
       loop
       playsinline
@@ -34,4 +37,4 @@ const sub = subFor(moment, lang);
     <h2 class="line-clamp-2 text-base leading-normal font-medium">{heading}</h2>
     {sub && <p class="mt-1 text-sm text-muted-foreground">{sub}</p>}
   </div>
-</article>
+</a>

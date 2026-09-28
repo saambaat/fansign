@@ -48,7 +48,7 @@ export default function MobileNav({ years, activeYear, lang }: Props) {
               {years.map((year) => (
                 <a
                   key={year}
-                  href={localePath(lang, `/${year}/`)}
+                  href={localePath(lang, `/${year}`)}
                   aria-current={activeYear === year ? 'page' : undefined}
                   className={cn(itemClass, 'ml-6')}
                 >

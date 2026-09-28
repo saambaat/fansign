@@ -35,7 +35,7 @@ export const momentSchema = z
       .refine(isRealDate, { error: 'date must be a real calendar date' }),
     title: localizedTextSchema.optional(),
     event: localizedTextSchema.optional(),
-    credit: z.string().min(1).optional(),
+    credit: z.url({ error: 'credit must be a URL' }).optional(),
     tags: z.array(z.string().min(1)).default([]),
   })
   .strict();
