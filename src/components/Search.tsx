@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
 import { Input } from '@/components/ui/input';
-import { headingFor, type Moment } from '@/lib/moments';
+import { headingFor, monthName, type Moment } from '@/lib/moments';
 
 export default function Search({ moments }: { moments: Moment[] }) {
   const [query, setQuery] = useState('');
@@ -14,10 +14,11 @@ export default function Search({ moments }: { moments: Moment[] }) {
           heading: headingFor(moment),
           event: moment.event ?? '',
           date: moment.date,
+          month: monthName(moment.date.slice(0, 7)),
           tags: moment.tags ?? [],
         })),
         {
-          keys: ['heading', 'event', 'date', 'tags'],
+          keys: ['heading', 'event', 'date', 'month', 'tags'],
           threshold: 0.35,
           ignoreLocation: true,
         },

@@ -1,5 +1,7 @@
 ## Development
 
+This repo uses bun as its package manager. Use `bun install` and `bun run <script>`.
+
 When starting the dev server, use background mode:
 
 ```
