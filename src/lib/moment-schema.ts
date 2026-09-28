@@ -16,6 +16,18 @@ export const resolveText = (value: LocalizedText | undefined, lang: Lang): strin
   return value[lang] ?? value[defaultLang] ?? Object.values(value)[0];
 };
 
+export const pairingIds = ['jjinchinz'] as const;
+
+export const pairingSchema = z.enum(pairingIds);
+
+export type Pairing = z.infer<typeof pairingSchema>;
+
+export const momentTypeIds = ['fansign'] as const;
+
+export const momentTypeSchema = z.enum(momentTypeIds);
+
+export type MomentType = z.infer<typeof momentTypeSchema>;
+
 export const isRealDate = (value: string): boolean => {
   const parsed = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
@@ -29,6 +41,8 @@ export const momentSchema = z
       .regex(/^[A-Za-z0-9]+$/, {
         error: 'id must be the bare Imgur media ID (e.g. aMmtnGX), not a URL or album path',
       }),
+    pairing: pairingSchema,
+    momentType: momentTypeSchema,
     date: z
       .iso
       .date({ error: 'date must be yyyy-MM-dd' })

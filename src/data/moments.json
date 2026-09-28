@@ -1,6 +1,8 @@
 [
   {
     "id": "aMmtnGX",
+    "pairing": "jjinchinz",
+    "momentType": "fansign",
     "date": "2026-06-28",
     "event": {
       "ko": "후즈팬 대면 팬사인회",
@@ -11,6 +13,8 @@
   },
   {
     "id": "yzPKXuk",
+    "pairing": "jjinchinz",
+    "momentType": "fansign",
     "date": "2026-06-28",
     "event": {
       "en": "Who's Fan in-person fansign",
@@ -21,6 +25,8 @@
   },
   {
     "id": "QncTOW6",
+    "pairing": "jjinchinz",
+    "momentType": "fansign",
     "date": "2026-05-14",
     "event": {
       "en": "Zenith Objekt Trading Cafe",
@@ -31,6 +37,8 @@
   },
   {
     "id": "zPvz7lR",
+    "pairing": "jjinchinz",
+    "momentType": "fansign",
     "date": "2025-09-13",
     "event": {
       "en": "Everline Fan Signing Event",
