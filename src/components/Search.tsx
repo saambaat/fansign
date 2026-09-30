@@ -157,7 +157,7 @@ export default function Search({ lang, mode = 'dropdown' }: Props) {
         className="h-8 w-full rounded-full"
       />
       {showPanel && (
-        <div className="absolute top-full right-0 z-50 mt-2 w-[min(calc(100vw_-_2rem),26rem)] overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-lg">
+        <div className="absolute top-full right-0 z-50 mt-2 w-full overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-lg">
           {trimmed === '' ? (
             <p className="px-3 py-2.5 text-sm text-muted-foreground">{t('search.hint')}</p>
           ) : failed ? (
