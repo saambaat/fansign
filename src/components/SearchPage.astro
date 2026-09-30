@@ -3,8 +3,7 @@ import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { moments } from '../lib/moments';
-import { allPairingIds } from '../lib/pairings';
-import PairingCard from './PairingCard.astro';
+import SearchPageResults from './SearchPageResults.tsx';
 
 interface Props {
   lang: Lang;
@@ -12,17 +11,17 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-
 const years = [...new Set(moments.map((moment) => moment.date.slice(0, 4)))];
 ---
 
 <BaseLayout
-  title={t('site.title')}
+  title={`${t('search.placeholder')} · ${t('site.title')}`}
+  description={`${t('search.placeholder')} · ${t('site.description')}`}
   lang={lang}
   years={years}
-  pairings={allPairingIds}
+  searchMode="page"
+  robots="noindex"
 >
-  <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-5">
-    {allPairingIds.map((id) => <PairingCard pairing={id} lang={lang} />)}
-  </div>
+  <h1 class="text-lg font-semibold">{t('search.placeholder')}</h1>
+  <SearchPageResults lang={lang} client:load />
 </BaseLayout>
