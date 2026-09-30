@@ -7,7 +7,7 @@ import ThemeToggle from '../components/ThemeToggle.tsx';
 import { languages, type Lang } from '../i18n/ui';
 import { asLang, localePath, stripLocale, useTranslations } from '../i18n/utils';
 import { monthKey, monthName } from '../lib/months';
-import type { Moment, Pairing } from '../lib/moment-schema';
+import type { Pairing } from '../lib/moment-schema';
 import '../styles/global.css';
 
 interface Props {
@@ -18,10 +18,10 @@ interface Props {
   activeYear?: string;
   activePairing?: Pairing;
   pairings?: Pairing[];
-  searchMoments?: Moment[];
-  searchPairings?: Pairing[];
   months?: string[];
   lang?: Lang;
+  searchMode?: 'dropdown' | 'page';
+  robots?: string;
 }
 
 const {
@@ -29,9 +29,9 @@ const {
   years,
   activeYear,
   activePairing,
-  searchMoments,
-  searchPairings,
   months = [],
+  searchMode = 'dropdown',
+  robots,
 } = Astro.props;
 const lang = Astro.props.lang ?? asLang(Astro.currentLocale);
 const t = useTranslations(lang);
@@ -57,6 +57,7 @@ const localeUrls = Object.fromEntries(
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content={Astro.props.type ?? 'website'} />
     <meta property="og:site_name" content={t('site.title')} />
@@ -102,26 +103,7 @@ const localeUrls = Object.fromEntries(
         <MobileNav years={years} activeYear={activeYear} lang={lang} client:load />
         <span class="shrink-0 text-sm font-semibold">{t('site.title')}</span>
         <div class="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:max-w-md">
-          {
-            (searchMoments || searchPairings) && (
-              <Search
-                moments={searchMoments?.map(
-                  ({ id, pairing, momentType, date, title, event, tags }) => ({
-                    id,
-                    pairing,
-                    momentType,
-                    date,
-                    title,
-                    event,
-                    tags,
-                  }),
-                )}
-                pairings={searchPairings}
-                lang={lang}
-                client:load
-              />
-            )
-          }
+          <Search lang={lang} mode={searchMode} client:load />
           <LanguageSwitcher lang={lang} urls={localeUrls} client:load />
           <ThemeToggle lang={lang} client:load />
         </div>
@@ -143,9 +125,6 @@ const localeUrls = Object.fromEntries(
       />
       <main class="min-w-0">
         <slot />
-        <p class="py-12 text-center text-muted-foreground" data-empty-state hidden>
-          {t('search.empty')}
-        </p>
       </main>
       {
         months.length > 0 && (
@@ -153,7 +132,7 @@ const localeUrls = Object.fromEntries(
             <p class="mb-2 pl-3 text-xs font-medium text-muted-foreground">{t('nav.months')}</p>
             <ul class="flex flex-col gap-0.5 border-l">
               {months.map((month) => (
-                <li data-month-link={monthKey(month)}>
+                <li>
                   <a
                     href={`#${monthKey(month)}`}
                     class="-ml-px block border-l border-transparent px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"

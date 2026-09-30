@@ -31,6 +31,7 @@ export default defineConfig({
         defaultLocale: 'en',
         locales: { en: 'en', ko: 'ko', zh: 'zh' },
       },
+      filter: (page) => !page.includes('/search'),
       serialize: (item) => ({
         ...item,
         url: withoutTrailingSlash(item.url),

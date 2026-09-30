@@ -1,0 +1,8 @@
+---
+import SearchPage from '../components/SearchPage.astro';
+import { asLang } from '../i18n/utils';
+
+const lang = asLang(Astro.currentLocale);
+---
+
+<SearchPage lang={lang} />
